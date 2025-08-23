@@ -1,10 +1,7 @@
 import asyncio
 import time
 import threading
-
 from fastapi import FastAPI
-import uvicorn
-
 app = FastAPI(docs_url=None)
 
 @app.get("/sync/{id}")
@@ -24,4 +21,4 @@ async def async_func(id: int):
 
 
 #if __name__ == "__main__":
-#    uvicorn.run("main:app", reload=True)
+#   uvicorn.run("main:app", reload=True)

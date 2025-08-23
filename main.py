@@ -9,7 +9,7 @@ app.include_router(hotels_router)
 if __name__ == "__main__":
    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
 
-   """  Test script
+"""  
  
 import asyncio 
 import aiohttp
@@ -29,7 +29,7 @@ async def get_data(i: int, endpoint: str ) :
 
 Get-Process -Name python | Stop-Process 
 
-   """
+ """
    
    
    
