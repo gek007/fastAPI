@@ -45,7 +45,10 @@ def create_hotel(
     return {"status": "OK"}
 
 
-@app.put("/hotels/{hotel_id}")
+@app.put("/hotels/{hotel_id}",
+         summary="Update info about Hotel !!!!",
+         description="**** Update info about Hotel ****"
+)
 def edit_hotel(
         hotel_id: int,
         title: str = Body(embed=True),
