@@ -6,6 +6,8 @@ hotels = [
     {"id": 2, "title": "Moscow"},
     {"id": 3, "title": "Panama"},
     {"id": 4, "title": "Piter"},
+    {"id": 4, "title": "Tel-aviv"},
+    {"id": 4, "title": "Bat-yam"},
 ]
 app = FastAPI()
 @app.get("/hotels")
