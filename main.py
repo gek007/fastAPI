@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Body
 import uvicorn
 
 hotels = [
@@ -31,6 +31,18 @@ def delete_hotel(hotel_id: int):
    global hotels
    hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id ]
    return {"staus":"OK"}
+
+#reuest body
+@app.post("/hotels")
+def create_hotel(
+        title: str = Body(embed=True, description="Hotel Name"),
+):
+    global hotels
+    hotels.append(
+        {
+            "id": hotels[-1]["id"] + 1,
+            "title": title
+        })
 
 
 
