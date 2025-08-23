@@ -7,7 +7,6 @@ import uvicorn
 
 app = FastAPI(docs_url=None)
 
-
 @app.get("/sync/{id}")
 def sync_func(id: int):
     print(f"sync. Потоков: {threading.active_count()}")
@@ -24,5 +23,5 @@ async def async_func(id: int):
     print(f"async. Закончил {id}: {time.time():.2f}")
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+#if __name__ == "__main__":
+#    uvicorn.run("main:app", reload=True)

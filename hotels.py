@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Query, Body, HTTPException, APIRouter
-import threading
-
-router = APIRouter(prefix="/hotels")
+from fastapi import FastAPI, Query, HTTPException, APIRouter
+from schemas.hotels import Hotel, HotelPATCH
+router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 hotels = [
     {"id": 1, "title": "Sochi", "name": "Sochi"},
@@ -11,7 +10,6 @@ hotels = [
     {"id": 4, "title": "Tel-aviv", "name": "Tel-aviv"},
     {"id": 4, "title": "Bat-yam", "name": "Bat-yam"},
 ]
-
 
 @router.get("")
 def func(
@@ -35,15 +33,15 @@ def delete_hotel(hotel_id: int):
    hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id ]
    return {"staus":"OK"}
 
+
 #reuest body
 @router.post("")
-def create_hotel(
-        title: str = Body(embed=True),
-):
+def create_hotel(hotel_data: Hotel):
     global hotels
     hotels.append({
         "id": hotels[-1]["id"] + 1,
-        "title": title
+        "title": hotel_data.title,
+        "name": hotel_data.name,
     })
     return {"status": "OK"}
 
@@ -52,17 +50,13 @@ def create_hotel(
          summary="Update info about Hotel !!!!",
          description="**** Update info about Hotel ****"
 )
-def edit_hotel(
-        hotel_id: int,
-        title: str = Body(embed=True),
-        name: str = Body(embed=True),
-):
+def edit_hotel(hotel_id: int, hotel_data: Hotel):
     global hotels
 
     for h in hotels:
         if h["id"] == hotel_id:
-                h["name"] = name
-                h["title"] = title
+                h["name"] = hotel_data.name
+                h["title"] = hotel_data.title
                 return {"message": "Hotel updated", "hotel": h}
 
     raise HTTPException(status_code=404, detail="Hotel not found")
@@ -70,8 +64,7 @@ def edit_hotel(
 @router.patch("/{hotel_id}")
 def partially_edit_hotel(
         hotel_id: int,
-        title: str | None = Body(None),
-        name: str | None = Body(None),
+        hotel_data: HotelPATCH,
 ):
     global hotels
     flag = True
@@ -79,11 +72,11 @@ def partially_edit_hotel(
 
     for h in hotels:
         if h["id"] == hotel_id:
-            if title is not None:
-                h["title"] = title
+            if hotel_data.title is not None:
+                h["title"] = hotel_data.title
                 flag = True
-            if name is not None:
-                h["name"] = name
+            if hotel_data.name is not None:
+                h["name"] = hotel_data.name
                 flag = True
 
     if flag:

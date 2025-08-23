@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, Body, HTTPException
 import uvicorn
 from hotels import router as hotels_router
 app = FastAPI()
-app.include_router(hotels_router, tags=["hotels"])
+app.include_router(hotels_router)
 #@app.get("/docs", include_in_schema=False)
 #async def custom_swagger_ui_html():
 
@@ -26,6 +26,8 @@ async def get_data(i: int, endpoint: str ) :
   asyncio.gather(
       *[get_data(i, "async") for i in range(30)]
     )
+
+Get-Process -Name python | Stop-Process 
 
    """
    
