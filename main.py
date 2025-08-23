@@ -64,8 +64,8 @@ def put_hotel(
 @app.patch("/hotels/{hotel_id}")
 def patch_hotel(
         hotel_id: int,
-        title: str = Body(embed=True),
-        name: str = Body(embed=True),
+        title: str | None = Body(None),
+        name: str | None = Body(None),
 ):
     global hotels
     flag = True
