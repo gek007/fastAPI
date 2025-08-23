@@ -46,7 +46,7 @@ def create_hotel(
 
 
 @app.put("/hotels/{hotel_id}")
-def put_hotel(
+def edit_hotel(
         hotel_id: int,
         title: str = Body(embed=True),
         name: str = Body(embed=True),
@@ -62,7 +62,7 @@ def put_hotel(
     raise HTTPException(status_code=404, detail="Hotel not found")
 
 @app.patch("/hotels/{hotel_id}")
-def patch_hotel(
+def partially_edit_hotel(
         hotel_id: int,
         title: str | None = Body(None),
         name: str | None = Body(None),
