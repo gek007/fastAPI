@@ -46,7 +46,11 @@ def create_hotel(
 
 
 @app.put("/hotels/{hotel_id}")
-def put_hotel(hotel_id: int, title: str,  name: str):
+def put_hotel(
+        hotel_id: int,
+        title: str = Body(embed=True),
+        name: str = Body(embed=True),
+):
     global hotels
 
     for h in hotels:
@@ -58,9 +62,14 @@ def put_hotel(hotel_id: int, title: str,  name: str):
     raise HTTPException(status_code=404, detail="Hotel not found")
 
 @app.patch("/hotels/{hotel_id}")
-def patch_hotel(hotel_id: int, title: str, name: str):
+def patch_hotel(
+        hotel_id: int,
+        title: str = Body(embed=True),
+        name: str = Body(embed=True),
+):
     global hotels
-    flag = False
+    flag = True
+    #hotel = [hotel for hotel in hotels if hotel["id"] != hotel_id][0]
 
     for h in hotels:
         if h["id"] == hotel_id:
@@ -71,8 +80,8 @@ def patch_hotel(hotel_id: int, title: str, name: str):
                 h["name"] = name
                 flag = True
 
-            if (flag):
-               return {"message": "Hotel updated", "hotel": h}
+    if flag:
+       return {"message": "Hotel updated", "hotel": h}
 
     raise HTTPException(status_code=404, detail="Hotel not found")
 
