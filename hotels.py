@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, HTTPException, APIRouter
+from fastapi import FastAPI, Query, HTTPException, APIRouter, Body
 from schemas.hotels import Hotel, HotelPATCH
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
@@ -7,15 +7,18 @@ hotels = [
     {"id": 2, "title": "Moscow", "name": "Moscow"},
     {"id": 3, "title": "Panama","name": "Panama" },
     {"id": 4, "title": "Piter", "name": "Piter"},
-    {"id": 4, "title": "Tel-aviv", "name": "Tel-aviv"},
-    {"id": 4, "title": "Bat-yam", "name": "Bat-yam"},
+    {"id": 5, "title": "Tel-aviv", "name": "Tel-aviv"},
+    {"id": 6, "title": "Bat-yam", "name": "Bat-yam"},
+    {"id": 7, "title": "New-York", "name": "New-York"},
 ]
 
 @router.get("")
 def func(
             id: int | None =  Query(None, Description = "Id of Hotel"),
             title: str | None = Query(None, Description = "Hotel Name"),
-        ):
+            page: int = Query(1, ge=1, description="Page number"),
+            per_page: int = Query(3, ge=1, le=100, description="Items per page"),
+):
 
     hotels_ = []
     for hotel in hotels:
@@ -25,8 +28,17 @@ def func(
             continue
         hotels_.append(hotel)
 
-    return hotels_
+        # Pagination
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated = hotels_[start:end]
 
+        return {
+            "page": page,
+            "per_page": per_page,
+            "total": len(hotels_),
+            "items": paginated
+        }
 @router.delete("/{hotel_id}")
 def delete_hotel(hotel_id: int):
    global hotels
