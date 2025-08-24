@@ -1,5 +1,7 @@
-from fastapi import FastAPI, Query, HTTPException, APIRouter, Body
+from fastapi import Query, HTTPException, APIRouter
+from dependencies import PaginationDep
 from schemas.hotels import Hotel, HotelPATCH
+
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 hotels = [
@@ -13,13 +15,13 @@ hotels = [
 ]
 
 @router.get("")
-def func(
-            id: int | None =  Query(None, Description = "Id of Hotel"),
-            title: str | None = Query(None, Description = "Hotel Name"),
-            page: int = Query(1, ge=1, description="Page number"),
-            per_page: int = Query(3, ge=1, le=100, description="Items per page"),
+def get_hotels(
+        pagination: PaginationDep,
+        id: int | None = Query(None, description="Айдишник"),
+        title: str | None = Query(None, description="Название отеля"),
+        page: int | None = Query(None, gt=0),
+        per_page: int | None = Query(None, gt=0, lt=30),
 ):
-
     hotels_ = []
     for hotel in hotels:
         if id and hotel["id"] != id:
@@ -28,17 +30,13 @@ def func(
             continue
         hotels_.append(hotel)
 
-        # Pagination
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated = hotels_[start:end]
+    if page and per_page:
+        return hotels_[per_page * (page-1):][:per_page]
+    if pagination.page and pagination.per_page:
+        return hotels_[pagination.per_page * (pagination.page-1):][:pagination.per_page]
+    return hotels_
 
-        return {
-            "page": page,
-            "per_page": per_page,
-            "total": len(hotels_),
-            "items": paginated
-        }
+
 @router.delete("/{hotel_id}")
 def delete_hotel(hotel_id: int):
    global hotels
@@ -90,8 +88,7 @@ def partially_edit_hotel(
             if hotel_data.name is not None:
                 h["name"] = hotel_data.name
                 flag = True
-
-    if flag:
-       return {"message": "Hotel updated", "hotel": h}
+            if flag:
+               return {"message": "Hotel updated", "hotel": h}
 
     raise HTTPException(status_code=404, detail="Hotel not found")
