@@ -5,11 +5,16 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.config import settings
-
 from src.api.hotels import router as hotels_router
 
+from src.config import settings
 print(f"{settings.DB_NAME=}")
+
+from src.config import settings
+print(f"{settings.DB_URL=}")
+
+from src.database import *
+
 app = FastAPI()
 app.include_router(hotels_router)
 #@app.get("/docs", include_in_schema=False)
