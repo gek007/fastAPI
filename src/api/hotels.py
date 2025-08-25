@@ -1,6 +1,8 @@
 from fastapi import Query, HTTPException, APIRouter
 from src.api.dependencies import PaginationDep
+#from src.models.hotels import HotelsOrm
 from src.schemas.hotels import Hotel, HotelPATCH
+from sqlalchemy import insert
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
@@ -46,13 +48,13 @@ def delete_hotel(hotel_id: int):
 
 #reuest body
 @router.post("")
-def create_hotel(hotel_data: Hotel):
-    global hotels
-    hotels.append({
-        "id": hotels[-1]["id"] + 1,
-        "title": hotel_data.title,
-        "name": hotel_data.name,
-    })
+async def create_hotel(hotel_data: Hotel):
+
+    async with async_session_maker() as session:
+        add_hotel_stmt = insert(HotelsOrm).values(**hotel_data.model_dump())
+        await session.execute(add_hotel_stmt)
+        await session.commit()
+
     return {"status": "OK"}
 
 

@@ -13,8 +13,6 @@ print(f"{settings.DB_NAME=}")
 from src.config import settings
 print(f"{settings.DB_URL=}")
 
-from src.database import *
-
 app = FastAPI()
 app.include_router(hotels_router)
 #@app.get("/docs", include_in_schema=False)
