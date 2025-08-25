@@ -22,7 +22,7 @@ def upgrade() -> None:
         op.create_table('hotels',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('title', sa.String(length=100), nullable=False),
-        sa.Column('locaion', sa.String(), nullable=False),
+        sa.Column('location', sa.String(), nullable=False),
         sa.PrimaryKeyConstraint('id')
     )
 
