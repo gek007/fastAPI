@@ -3,33 +3,33 @@ from src.api.dependencies import PaginationDep
 from src.database import async_session_maker, engine
 from src.models.hotels import HotelsOrm
 from src.schemas.hotels import Hotel, HotelPATCH
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, func
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 @router.get("")
 async def get_hotels(
         pagination: PaginationDep,
-        id: int | None = Query(None, description="Айдишник"),
+        location: str | None = Query(None, description="location"),
         title: str | None = Query(None, description="Название отеля"),
 ):
     per_page = pagination.per_page or 5
     async with async_session_maker() as session:
-       query = select(HotelsOrm)
-       if id:
-          query = query.filter_by(id=id)
-       if title:
-          query = query.filter_by(title=title)
-       query = (
-          query
-          .limit(per_page)
-          .offset(per_page * (pagination.page - 1))
-       )
-
-       result = await session.execute(query)
-       hotels = result.scalars().all()
-       print(type(hotels), hotels)
-       return hotels
+        query = select(HotelsOrm)
+        if location:
+            query = query.filter(func.lower(HotelsOrm.location).like(f"%{location.strip().lower()}%"))
+        if title:
+            query = query.filter(func.lower(HotelsOrm.title).like(f"%{title.strip().lower()}%"))
+        query = (
+            query
+            .limit(per_page)
+            .offset(per_page * (pagination.page - 1))
+        )
+        print(query.compile(compile_kwargs={"literal_binds": True}))
+        result = await session.execute(query)
+        hotels = result.scalars().all()
+        # print(type(hotels), hotels)
+        return hotels
        #return hotels
    # if pagination.page and pagination.per_page:
    # return hotels_[pagination.per_page * (pagination.page-1):][:pagination.per_page]
