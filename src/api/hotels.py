@@ -3,41 +3,25 @@ from src.api.dependencies import PaginationDep
 from src.database import async_session_maker, engine
 from src.models.hotels import HotelsOrm
 from src.schemas.hotels import Hotel, HotelPATCH
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
-hotels = [
-    {"id": 1, "title": "Sochi", "name": "Sochi"},
-    {"id": 2, "title": "Moscow", "name": "Moscow"},
-    {"id": 3, "title": "Panama","name": "Panama" },
-    {"id": 4, "title": "Piter", "name": "Piter"},
-    {"id": 5, "title": "Tel-aviv", "name": "Tel-aviv"},
-    {"id": 6, "title": "Bat-yam", "name": "Bat-yam"},
-    {"id": 7, "title": "New-York", "name": "New-York"},
-]
-
 @router.get("")
-def get_hotels(
+async def get_hotels(
         pagination: PaginationDep,
         id: int | None = Query(None, description="Айдишник"),
         title: str | None = Query(None, description="Название отеля"),
-        page: int | None = Query(None, gt=0),
-        per_page: int | None = Query(None, gt=0, lt=30),
 ):
-    hotels_ = []
-    for hotel in hotels:
-        if id and hotel["id"] != id:
-            continue
-        if title and hotel["title"] != title:
-            continue
-        hotels_.append(hotel)
 
-    if page and per_page:
-        return hotels_[per_page * (page-1):][:per_page]
-    if pagination.page and pagination.per_page:
-        return hotels_[pagination.per_page * (pagination.page-1):][:pagination.per_page]
-    return hotels_
+    async with async_session_maker() as session:
+        query = select(HotelsOrm)
+        result = await session.execute(query)
+        hotels = result.scalars().all()
+        # print(type(hotels), hotels)
+        return hotels
+   # if pagination.page and pagination.per_page:
+   # return hotels_[pagination.per_page * (pagination.page-1):][:pagination.per_page]
 
 
 @router.delete("/{hotel_id}")
