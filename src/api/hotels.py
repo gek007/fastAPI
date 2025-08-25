@@ -14,8 +14,8 @@ async def get_hotels(
         title: str | None = Query(None, description="Название отеля"),
 ):
 
-# Kostya
-    async with async_session_maker() as session:
+# Kostya ostya ostya ostya ostya ostya ostya
+async with async_session_maker() as session:
         query = select(HotelsOrm)
         result = await session.execute(query)
         hotels = result.scalars().all()
