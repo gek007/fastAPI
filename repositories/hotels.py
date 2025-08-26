@@ -22,12 +22,6 @@ class HotelsRepository(BaseRepository):
         return result.scalars().all()
 
 
-    async def add(self, hotel_data):
-        query = select(HotelsOrm)
-
-        print(query.compile(compile_kwargs={"literal_binds": True}))
-        await self.session.execute(query)
-
 
 
 
