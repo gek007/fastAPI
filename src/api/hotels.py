@@ -25,11 +25,11 @@ async def get_hotels(
         )
 
 @router.delete("/{hotel_id}")
-def delete_hotel(hotel_id: int):
-   global hotels
-   hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id ]
-   return {"staus":"OK"}
-
+async def delete_hotel(hotel_id: int):
+        async with async_session_maker() as session:
+            await HotelsRepository(session).delete(id=hotel_id)
+            await session.commit()
+        return {"status": "OK"}
 
 #reuest body
 @router.post("")
@@ -60,20 +60,13 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
     return {"status": "OK", "data": hotel}
 
 
-@router.put("/{hotel_id}",
-         summary="Update info about Hotel !!!!",
-         description="**** Update info about Hotel ****"
-)
-def edit_hotel(hotel_id: int, hotel_data: Hotel):
-    global hotels
+@router.put("/{hotel_id}")
+async def edit_hotel(hotel_id: int, hotel_data: Hotel):
+    async with async_session_maker() as session:
+        await HotelsRepository(session).edit(hotel_data, id=hotel_id)
+        await session.commit()
+    return {"status": "OK"}
 
-    for h in hotels:
-        if h["id"] == hotel_id:
-                h["name"] = hotel_data.name
-                h["title"] = hotel_data.title
-                return {"message": "Hotel updated", "hotel": h}
-
-    raise HTTPException(status_code=404, detail="Hotel not found")
 
 @router.patch("/{hotel_id}")
 def partially_edit_hotel(
