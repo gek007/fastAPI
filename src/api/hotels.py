@@ -69,23 +69,12 @@ async def edit_hotel(hotel_id: int, hotel_data: Hotel):
 
 
 @router.patch("/{hotel_id}")
-def partially_edit_hotel(
+async def partially_edit_hotel(
         hotel_id: int,
         hotel_data: HotelPATCH,
 ):
-    global hotels
-    flag = True
-    #hotel = [hotel for hotel in hotels if hotel["id"] != hotel_id][0]
+    async with async_session_maker() as session:
+        await HotelsRepository(session).edit(hotel_data, exclude_unset=True, id=hotel_id)
+        await session.commit()
+    return {"status": "OK"}
 
-    for h in hotels:
-        if h["id"] == hotel_id:
-            if hotel_data.title is not None:
-                h["title"] = hotel_data.title
-                flag = True
-            if hotel_data.name is not None:
-                h["name"] = hotel_data.name
-                flag = True
-            if flag:
-               return {"message": "Hotel updated", "hotel": h}
-
-    raise HTTPException(status_code=404, detail="Hotel not found")
